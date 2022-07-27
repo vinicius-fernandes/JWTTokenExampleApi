@@ -63,8 +63,5 @@ namespace JWTAuthentication.Controllers
             }
         }
 
-
-
-
-    }
+        }
 }
