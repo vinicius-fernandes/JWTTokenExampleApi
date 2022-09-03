@@ -3,11 +3,13 @@ using Microsoft.EntityFrameworkCore;
 using JWTAuthentication.Models;
 namespace JWTAuthentication.Data
 {
-    public class ApplicationDbContext:IdentityDbContext<ApplicationUser>
+    public abstract class ApplicationDbContext:IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
+        protected readonly IConfiguration _configuration;
 
+        public ApplicationDbContext(DbContextOptions options,IConfiguration configuration) : base(options)
+        {
+            _configuration= configuration;
         }
     }
 }

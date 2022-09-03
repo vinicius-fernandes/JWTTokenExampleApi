@@ -11,14 +11,22 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 //Registra o contexto de dados configurando para utilizar o SQL Server
-if(builder.Environment.IsDevelopment()){
-builder.Services.AddDbContext<ApplicationDbContext>(options=>
-                    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+var provider = builder.Configuration.GetValue("DbProvider","SQLServer");
+
+switch (provider)
+{
+    case "SQLServer":
+        builder.Services.AddDbContext<ApplicationDbContext, SqlServerDbContext>();
+        break;
+    case "PostgreSQL":
+        builder.Services.AddDbContext<ApplicationDbContext, PostgreSQLDbContext>();
+        break;
+    default:
+        throw new Exception($"Unsupported provides: {provider}");
 }
-else{
-builder.Services.AddDbContext<ApplicationDbContext>(options=>
-                    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
-}
+
+
 
 //Define a configuração do Identity Framework
 builder.Services.AddIdentity<ApplicationUser,IdentityRole>()
@@ -79,12 +87,11 @@ builder.Services.AddAuthentication(x=>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+    
+
 app.UseCors(options =>
             {
                 options.WithOrigins("http://localhost:3000");
