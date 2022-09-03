@@ -10,10 +10,15 @@ using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
-
 //Registra o contexto de dados configurando para utilizar o SQL Server
+if(builder.Environment.IsDevelopment()){
 builder.Services.AddDbContext<ApplicationDbContext>(options=>
                     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+}
+else{
+builder.Services.AddDbContext<ApplicationDbContext>(options=>
+                    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSQL")));
+}
 
 //Define a configuração do Identity Framework
 builder.Services.AddIdentity<ApplicationUser,IdentityRole>()
